@@ -15,38 +15,18 @@ img_med=mat2gray(img_med);
 % figure,imshow(img_med);
 
 %%  RPE segmentation using 0,9 max. intensity in each colum 【B1】
-max_colum=max(img_med);
-T=max_colum*0.90;
-img_bin=zeros(M,N);
-for i=1:1:N
-    v=img_med(:,i);
-    w=v>T(i);
-    img_bin(:,i)=w(:);
-end
-img_3=0.5*img_bin+0.5*img_med; % fuse the binay image and origin image
-figure,imshow(img_bin);
-%%在segemnt RPE的时候收到NFL的干扰
-for n=1:1:N
-    for m=1:1:M
-        if img_bin(m,n)==1
-            img_w(m,n)=m;
-        else
-            img_w(m,n)=0;
-        end
-    end
-    sum_c(n)=sum(img_w(:,n));
-    sum_bin(n)=sum(img_bin(:,n));
-    y_rpe(n)=sum_c(n)/sum_bin(n);   %%传统Drusen取中线作为RPE可以，但是 RPD不行
-end
+im=img_med;tf=0.9;
+[im_bin,y_rpe]=RPE_colummax(im,tf);
 figure,imshow(img); hold on,
-plot(y_rpe,'r');
-%% 通过区域生长消除NFL的干扰，几乎成功 【B2】(先区域生长除去NFL影响，在用B1法提取RPE边缘）
+plot(y_rpe,'r'); hold on,
+
+%% RPE segmentation using regiongrow【B2】
 [g,NR,SI,TI]=regiongrow(img,1.0,0.4);
 figure,imshow(g,[]);title('after Regiongrow');
 f=zeros(M,N);
 for m=1:1:M
     for n=1:1:N
-        if g(m,n)==1 %有可能不是1，而是2.
+        if g(m,n)==1 
             f(m,n)=1;
         end
     end
