@@ -1,10 +1,10 @@
 close all;
 clear all;
 %Quelle:image processing of OCT using Matlab%
-% load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1004.mat');
-% N=50; %the number of N-th sectional Image
-% img=images(:,:,N);
-img=imread('RPD1.png'); img=rgb2gray(img);
+load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1004.mat');
+N=50; %the number of N-th sectional Image
+img=images(:,:,N);
+% img=imread('RPD2.jpg'); img=rgb2gray(img);
 
 [M,N]=size(img);
 %%preprocessing ¡¾A1¡¿
@@ -73,9 +73,7 @@ for i=1:1:size(locs)
     k1=[];
     k2=[];
     m=locs(i);
-    if m<7||m>N-6
-        continue;
-    end
+    if m<7
     k1=y_ez(m:m+5) < y_ez(m+1:m+6);
     if sum(k1)>=3
         k2=y_ez(m-5:m) < y_ez(m-6:m-1);
@@ -90,7 +88,7 @@ for i=1:1:size(locs)
     end
 end
 plot(locs_drusen,y_ez(locs_drusen),'r*');hold on, 
-%% detection of RPD
+%%
 j=1;locs_rpd=[];
 for i=1:1:size(locs_drusen)
     k1=[];
