@@ -9,10 +9,10 @@ img=imread('RPD1.png'); img=rgb2gray(img);
 [M,N]=size(img);
 %%preprocessing ¡¾A1¡¿
 img=double(img)/255;
-img_med=medfilt2(img,[3 3]);
+img_med=medfilt2(img,[6  6]);
 img_med=mat2gray(img_med);
-% figure,imshow(img);
-% figure,imshow(img_med);
+figure,imshow(img);
+figure,imshow(img_med);
 
 %%  RPE segmentation using 0,9 max. intensity in each colum ¡¾B1¡¿
 im=img_med;tf=0.9;
