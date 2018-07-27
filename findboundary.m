@@ -1,6 +1,7 @@
 function [y_rpe,y_ez,y_ch]=findboundary(img_retina,T)
 
-%%this is a function to detection the bounddary of choroid, RPE and EZ in outer retina 
+%%[y_rpe,y_ez,y_ch]=findboundary(img_retina,T)
+%this is a function to detection the bounddary of choroid, RPE and EZ in outer retina 
 % %input:
 % %img_retina: is a binar image, in which the background is 0, the outer
 %retina is 0

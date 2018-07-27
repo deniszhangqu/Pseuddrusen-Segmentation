@@ -4,7 +4,7 @@ clear all;
 % load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1004.mat');
 % N=50; %the number of N-th sectional Image
 % img=images(:,:,N);
-img=imread('RPD1.png'); img=rgb2gray(img);
+img=imread('RPD3.png'); img=rgb2gray(img);
 
 [M,N]=size(img);
 %%preprocessing ¡¾A1¡¿

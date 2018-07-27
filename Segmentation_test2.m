@@ -1,10 +1,10 @@
 close all;
 clear all;
 %Quelle:image processing of OCT using Matlab%
-% load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1004.mat');
-% N=50; %the number of N-th sectional Image
-% img=images(:,:,N);
-img=imread('RPD1.png'); img=rgb2gray(img);
+load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1002.mat');
+N=50; %the number of N-th sectional Image
+img=images(:,:,N);
+% img=imread('RPD2.jpg'); img=rgb2gray(img);
 
 [M,N]=size(img);
 %%preprocessing ¡¾A1¡¿
@@ -18,10 +18,20 @@ figure,imshow(img);
 Ts=max(img(:));
 [g,NR,SI,TI]=regiongrow(img,Ts,0.4);
 figure,imshow(g,[]);title('after Regiongrow');
+T=1;leng=0;
+for i=1:1:max(g(:))
+    e=[];
+    e=find(g==i);
+    if length(e)>leng
+        T=i;
+        leng=length(e);
+    end
+end
+%%
 f=zeros(M,N);
 for m=1:1:M
     for n=1:1:N
-        if g(m,n)==1
+        if g(m,n)==T
             f(m,n)=1;
         end
     end
@@ -83,9 +93,9 @@ for i=1:1:size(locs)
     if m<7||m>N-6 % the punkt by edge willn't be considered
         continue;
     end
-    k1=y_ez(m:m+5) < y_ez(m+1:m+6);
+    k1=y_ez(m:m+5) <= y_ez(m+1:m+6);
     if sum(k1)>=3
-        k2=y_ez(m-5:m) < y_ez(m-6:m-1);
+        k2=y_ez(m-5:m) <= y_ez(m-6:m-1);
         if sum(k2)>=3
             p_drusen(j)=locs(i);
             j=j+1;
@@ -107,8 +117,8 @@ for i=1:1:size(p_drusen,2)
     k1=[];
     k2=[];
     m=p_drusen(i);
-    k1=y_ch(m:m+5) < y_ch(m+1:m+6);
-    k2=y_ch(m-5:m) < y_ch(m-6:m-1);
+    k1=y_ch(m:m+5) <=y_ch(m+1:m+6);
+    k2=y_ch(m-5:m) <=y_ch(m-6:m-1);
     if (sum(k1)<3) && (sum(k2)<3)
         p_rpd(j)=p_drusen(i);
         j=j+1;
