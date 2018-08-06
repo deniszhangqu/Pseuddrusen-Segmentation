@@ -35,18 +35,107 @@ end
 figure,imshow(img_shift); title('fattend image '); hold on,
 plot(y_rpe+(k-y_rpe),'r-');
 %%
-Y(1:N)=0; 
+Y(1:N)=0;
 gradient_mask_ld=[1;-1]; %like RPE-Choriod
 gradient_mask_dl=[-1;1];  %like NFL,OS-RPE
-img_gradient=imfilter(img,gradient_mask_dl,'replicate');
-img_gradient=img_gradient./max(img_gradient(:)); %Normierung
-
+img_gradient=imfilter(img_shift,gradient_mask_dl,'replicate');
+img_gradient=img_gradient-min(img_gradient(:))./max(img_gradient(:)-min(img_gradient(:))); %Normierung
 
 %%
-% X=X-28999;Y=Y-28999;
-% DG=sparse(X,Y,weig);
-% h = view(biograph(DG,[],'ShowWeights','on'))
-% Biograph object with 110000 nodes and 880000 edges.
+im_g=img_gradient(30:80,150:200);
+[M,N1]=size(im_g);
+N2=N1+2; %左右添加一列
+g_min=0.0001;
+n=1;
+%% calculate the weights bitween nodes
+for k=1:1:M*N2
+    if rem(k,N2)~=1 && rem(k,N2)~=N2-1 && rem(k,N2)~=0 % 处理2：N2-2列
+        if fix(k/N2)+1==1 % 处理第一行
+            s(n:n+1)=k;
+            t(n:n+1)=[k+1,k+1+N2];
+            g_k=im_g(fix(k/N2)+1,rem(k,N2)-1);
+            %g_k1=im_g(fix((k+1-N2)./N2)+1,rem(k+1-N2)-1); %最上面一行不能再向上走
+            g_k2=im_g(fix((k+1)/N2)+1,rem(k+1,N2)-1);
+            g_k3=im_g(fix((k+1+N2)/N2)+1,rem(k+1+N2,N2)-1);
+            weights(n:n+1)=[2-(g_k+g_k2)+g_min,2-(g_k+g_k3)+g_min];
+            n=n+2;
+        elseif fix(k/N2)+1==N1 %处理最后一行
+            s(n:n+1)=k;
+            t(n:n+1)=[k+1-N2,k+1];
+            g_k=im_g(fix((k)./N2)+1,rem(k,N2)-1);
+            g_k1=im_g(fix((k+1-N2)./N2)+1,rem(k+1-N2,N2)-1);
+            g_k2=im_g(fix((k+1)./N2)+1,rem(k+1,N2)-1);
+            %g_k3=im_g(fix((k+1+N2)./N2)+1,rem(k+1+N2,N2)-1); %最下面一行不能再向下
+            weights(n:n+1)=[2-(g_k+g_k1)+g_min,2-(g_k+g_k2)+g_min];
+            n=n+2;
+        else
+            s(n:n+2)=k;
+            t(n:n+2)=[k+1-N2,k+1,k+1+N2];
+            g_k=im_g(fix((k)./N2)+1,rem(k,N2)-1);
+            g_k1=im_g(fix((k+1-N2)./N2)+1,rem(k+1-N2,N2)-1);
+            g_k2=im_g(fix((k+1)./N2)+1,rem(k+1,N2)-1);
+            g_k3=im_g(fix((k+1+N2)./N2)+1,rem(k+1+N2,N2)-1);
+            weights(n:n+2)=[2-(g_k+g_k1)+g_min,2-(g_k+g_k2)+g_min,2-(g_k+g_k3)+g_min];
+            n=n+3;
+        end
+        
+    elseif  rem(k,N2)==1
+        if fix(k/N2)+1==1
+            s(n:n+1)=k;
+            t(n:n+1)=[k+1,k+1+N2];
+            weights(n:n+1)=[g_min,g_min];
+            n=n+2;
+        elseif fix(k/N2)+1==N1
+            s(n:n+1)=k;
+            t(n:n+1)=[k+1-N2,k+1];
+            weights(n:n+1)=[g_min,g_min];
+            n=n+2;
+        else
+            s(n:n+2)=k;
+            t(n:n+2)=[k+1-N2,k+1,k+1+N2];
+            weights(n:n+2)=[g_min,g_min,g_min];
+            n=n+3;
+        end
+        
+    elseif rem(k,N2)==N2-1
+        
+        if fix(k/N2)+1==1
+            s(n:n+1)=k;
+            t(n:n+1)=[k+1,k+1+N2];
+            weights(n:n+1)=[g_min,g_min];
+            n=n+2;
+        elseif fix(k/N2)+1==N2
+            s(n:n+1)=k;
+            t(n:n+2)=[k+1-N2,k+1];
+            weights(n:n+1)=[g_min,g_min];
+            n=n+2;
+        else
+            s(n:n+2)=k;
+            t(n:n+2)=[k+1-N2,k+1,k+1+N2];
+            weights(n:n+2)=[g_min,g_min,g_min];
+            n=n+3;
+        end
+    else
+        continue;
+    end
+end
+%%
 
-
+G = digraph(s',t',weights);
+path=shortestpath(G,1,2703);
+%%
+j=1;
+for i=1:1:N2
+    if rem(path(i),N2)~=1 && rem(path(i),N2)~=0
+        n(j)=fix((path(i)-1)/N2);
+        m(j)=rem(path(i),N2)-1;
+        j=j+1;
+    else
+        continue;
+    end
+end
+%figure,plot(G,'Layout','force')
+%%
+figure,imshow(im_g); hold on,
+plot(m,n,'r*');hold off
 

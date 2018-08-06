@@ -33,7 +33,7 @@ f1=imclose(f,se);
 [y_rpe,y_ez,y_ch]=findboundary(f1,1); 
 [peaks,p_drusen,p_normaldrusen,p_rpd]=finddrusen(y_ez,y_ch,7,2);
 
-%% plots of boundary and drusen 
+%% show of boundary and drusen 
 figure,imshow(img); title('origin image');
 
 figure,imshow(img); hold on,
