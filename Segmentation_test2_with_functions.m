@@ -1,11 +1,11 @@
 close all;
 clear all;
 %Quelle:image processing of OCT using Matlab%
-% load('D:\GoogleDrive\Masterarbeit-Matlab\Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1004.mat');
-% N=50; %the number of N-th sectional Image
-% img=images(:,:,N);
+load('D:\Master-Dataset\Duke\269AMD\Farsiu_Ophthalmology_2013_AMD_Subject_1005.mat');
+N=50; %the number of N-th sectional Image
+img=images(:,:,N);
 
-img=imread('RPD5.jpg'); img=rgb2gray(img);
+% img=imread('D:\Master-Dataset\RPD5.jpg'); img=rgb2gray(img);
 
 [M,N]=size(img);
 %%preprocessing ¡¾A1¡¿
@@ -18,9 +18,13 @@ Ts=max(img(:));
 [g,NR,SI,TI]=regiongrow(img,Ts,0.4);
 
 f=zeros(M,N);
+for i=1:1:5
+    region_leng(i)=length(find(g==i));
+end
+K=find(region_leng==max(region_leng));
 for m=1:1:M
     for n=1:1:N
-        if g(m,n)==1
+        if g(m,n)==K
             f(m,n)=1;
         end
     end
